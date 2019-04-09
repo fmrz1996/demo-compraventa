@@ -1,20 +1,110 @@
-<!--The content below is only a placeholder and can be replaced.-->
-<div style="text-align:center">
-  <h1>
-    Welcome to {{ title }}!
-  </h1>
-  <img width="300" alt="Angular Logo" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNTAgMjUwIj4KICAgIDxwYXRoIGZpbGw9IiNERDAwMzEiIGQ9Ik0xMjUgMzBMMzEuOSA2My4ybDE0LjIgMTIzLjFMMTI1IDIzMGw3OC45LTQzLjcgMTQuMi0xMjMuMXoiIC8+CiAgICA8cGF0aCBmaWxsPSIjQzMwMDJGIiBkPSJNMTI1IDMwdjIyLjItLjFWMjMwbDc4LjktNDMuNyAxNC4yLTEyMy4xTDEyNSAzMHoiIC8+CiAgICA8cGF0aCAgZmlsbD0iI0ZGRkZGRiIgZD0iTTEyNSA1Mi4xTDY2LjggMTgyLjZoMjEuN2wxMS43LTI5LjJoNDkuNGwxMS43IDI5LjJIMTgzTDEyNSA1Mi4xem0xNyA4My4zaC0zNGwxNy00MC45IDE3IDQwLjl6IiAvPgogIDwvc3ZnPg==">
+<mat-toolbar color="primary">
+  <mat-toolbar-row>
+      <a href="https://material.angular.io/">
+        <img class="angular-logo" src="https://material.angular.io/assets/img/homepage/angular-white-transparent.svg">
+      </a> Compra y Venta: Ruta16
+    <span class="toolbar-spacer"></span>
+    <button mat-button (click)="addUserDialog()">
+      <i class="fas fa-user-plus fa-lg"></i>
+    </button>
+  </mat-toolbar-row>
+</mat-toolbar>
+<div class="container" color="accent">
+  <mat-tab-group [selectedIndex]="selectedIndex">
+    <mat-tab label="NUEVA VENTA">
+      <mat-card>
+        <form [formGroup]="formNewSale" autocomplete="off" (ngSubmit)="saveSale()">
+          <mat-card-content>
+            <div class="form-container">
+              <mat-card-title>
+                Datos Básicos
+              </mat-card-title>
+              <mat-form-field>
+                <mat-select placeholder="Selecciona un cliente" formControlName="client">
+                  <mat-option *ngFor="let user of users | objectToArray" [value]="users[user].name">{{ users[user].name }}</mat-option>
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field>
+                <mat-select placeholder="Selecciona una sucursal" formControlName="country">
+                  <mat-option *ngFor="let country of countries" [value]="{code: country.currencies[0].code, name: country.name}">{{ country.name }}</mat-option>
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field>
+                <mat-select placeholder="Selecciona un producto" formControlName="product">
+                  <mat-option *ngFor="let product of products" [value]="product.title">{{ product.title }}</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+            <div class="form-container">
+              <mat-card-title>
+                Detalles de Venta
+              </mat-card-title>
+              <table class="full-width" cellspacing="0">
+                <tr>
+                  <td>
+                    <mat-form-field>
+                      <input matInput placeholder="Precio" type="number" min="0" max="39990" formControlName="price" (input)="subtotal()">
+                    </mat-form-field>
+                  </td>
+                  <td>
+                    <mat-form-field>
+                      <input matInput placeholder="Cantidad" type="number" min="0" max="10" formControlName="quantity" (input)="subtotal()">
+                    </mat-form-field>
+                  </td>
+                </tr>
+              </table>
+              <mat-form-field>
+                <input matInput placeholder="Subtotal" formControlName="subtotal" class="subtotal">
+              </mat-form-field>
+            </div>
+          </mat-card-content>
+          <mat-card-actions>
+            <button mat-raised-button [disabled]="formNewSale.invalid" type="submit" color="primary">Guardar Venta</button>
+            <button mat-raised-button color="accent" type="reset">Limpiar</button>
+          </mat-card-actions>
+        </form>
+      </mat-card>
+    </mat-tab>
+    <mat-tab label="LISTADO DE VENTAS">
+      <mat-card>
+        <mat-card-title>
+          Ventas Realizadas
+        </mat-card-title>
+        <mat-form-field class="searchSales">
+          <input matInput (keyup)="search($event.target.value)" autocomplete="off" placeholder="Buscar">
+        </mat-form-field>
+        <mat-card-content class="mat-elevation-z8">
+          <table class="tableSales" mat-table matSort [dataSource]="tableSalesContent">
+            <ng-container matColumnDef="client">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Cliente</th>
+              <td mat-cell *matCellDef="let data">{{ data.client }}</td>
+            </ng-container>
+            <ng-container matColumnDef="country">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Sucursal</th>
+              <td mat-cell *matCellDef="let data">{{ data.country.name }}</td>
+            </ng-container>
+            <ng-container matColumnDef="product">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Producto</th>
+              <td mat-cell *matCellDef="let data">{{ data.product | titleProduct }}</td>
+            </ng-container>
+            <ng-container matColumnDef="price">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Precio</th>
+              <td mat-cell *matCellDef="let data">{{ data.price }}</td>
+            </ng-container>
+            <ng-container matColumnDef="quantity">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Cantidad</th>
+              <td mat-cell *matCellDef="let data">{{ data.quantity }}</td>
+            </ng-container>
+            <ng-container matColumnDef="subtotal">
+              <th mat-header-cell *matHeaderCellDef>Subtotal</th>
+              <td mat-cell *matCellDef="let data">{{ data.country.code }} <span class="subtotalSale">{{ data.quantity * data.price }}</span></td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="tableSalesColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: tableSalesColumns;"></tr>
+          </table>
+          <mat-paginator [pageSizeOptions]="[10, 20, 50]"></mat-paginator>
+        </mat-card-content>
+      </mat-card>
+    </mat-tab>
+  </mat-tab-group>
 </div>
-<h2>Here are some links to help you start: </h2>
-<ul>
-  <li>
-    <h2><a target="_blank" rel="noopener" href="https://angular.io/tutorial">Tour of Heroes</a></h2>
-  </li>
-  <li>
-    <h2><a target="_blank" rel="noopener" href="https://angular.io/cli">CLI Documentation</a></h2>
-  </li>
-  <li>
-    <h2><a target="_blank" rel="noopener" href="https://blog.angular.io/">Angular blog</a></h2>
-  </li>
-</ul>
-

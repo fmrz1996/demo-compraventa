@@ -1,0 +1,47 @@
+.container {
+  margin-left: 10%;
+  margin-right: 10%;
+}
+
+.toolbar-icon {
+  padding: 0 14px;
+}
+
+.toolbar-spacer {
+  flex: 1 1 auto;
+}
+
+.form-container {
+  display: flex;
+  flex-direction: column;
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+
+.form-container > *,
+.full-width,
+.tableSales,
+.searchSales {
+  width: 100%;
+}
+
+td {
+  padding-right: 8px;
+}
+
+td mat-form-field {
+  display: block;
+}
+
+.subtotal {
+  color: rgba(0, 0, 0, 1);
+}
+
+.tableSales {
+  margin-top: 20px!important;
+  overflow: auto;
+}
+
+.subtotalSale {
+  font-weight: 500;
+}
